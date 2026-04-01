@@ -6,15 +6,15 @@ const app = express()
 
 app.use(express.json())
 
+const config = require('./utils/config')
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
-const password = process.argv[2]
-const mongoUrl = `mongodb+srv://testi_db_user:${password}@cluster0.zzh6kgf.mongodb.net/?appName=Cluster0`
+
 mongoose.set('strictQuery', false)
-mongoose.connect(mongoUrl, { family: 4 })
+mongoose.connect(config.MONGODB_URI, { family: 4 })
 
 const blogSchema = mongoose.Schema({
   title: String,
@@ -39,7 +39,7 @@ app.post('/api/blogs', (request, response) => {
   })
 })
 
-const PORT = process.env.PORT
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`)
 })
