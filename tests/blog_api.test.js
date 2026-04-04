@@ -72,7 +72,7 @@ test('add blog successfully', async () => {
     assert(titles.includes('testi add blog'))
 })
 
-test('a specific blog can be viewed', async () => {
+test('get blog by id', async () => {
   const blogsAtStart = await testHelper.blogsInDb()
   const blogToView = blogsAtStart[0]
 
@@ -85,6 +85,21 @@ test('a specific blog can be viewed', async () => {
   assert.deepStrictEqual(resultBlog.body.author, blogToView.author)
 })
 
+test('delete blog by id', async () => {
+  const blogsAtStart = await testHelper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogsAtEnd = await testHelper.blogsInDb()
+
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+
+  const titles = blogsAtEnd.map(b => b.title)
+  assert(!titles.includes(blogToDelete.title))
+})
 
 
 
