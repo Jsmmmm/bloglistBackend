@@ -4,7 +4,7 @@ const supertest = require('supertest')
 const assert = require('node:assert')
 const app = require('../app')
 const Blog = require('../models/blog')
-const testData = require('./testHelper')
+const testHelper = require('./testHelper')
 
 const api = supertest(app)
 
@@ -12,9 +12,9 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  let blogObject = new Blog(testData.initialBlogs[0])
+  let blogObject = new Blog(testHelper.initialBlogs[0])
   await blogObject.save()
-  blogObject = new Blog(testData.initialBlogs[1])
+  blogObject = new Blog(testHelper.initialBlogs[1])
   await blogObject.save()
 })
 
@@ -49,8 +49,8 @@ test('blog without title is not added', async () => {
     await api.post('/api/blogs').send(testAdd).expect(400)
 
 
-    const blogsAtEnd = await testData.blogsInDb()
-    assert.strictEqual(blogsAtEnd.length, testData.initialBlogs.length)
+    const blogsAtEnd = await testHelper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, testHelper.initialBlogs.length)
 })
 
 test('add blog successfully', async () => {
@@ -64,12 +64,25 @@ test('add blog successfully', async () => {
 
     await api.post('/api/blogs').send(testAdd).expect(201).expect('Content-type', /application\/json/)
 
-    const blogsAtEnd = await testData.blogsInDb()
+    const blogsAtEnd = await testHelper.blogsInDb()
     
     const titles = blogsAtEnd.map(r => r.title)
-    assert.strictEqual(blogsAtEnd.length, testData.initialBlogs.length + 1)
+    assert.strictEqual(blogsAtEnd.length, testHelper.initialBlogs.length + 1)
 
     assert(titles.includes('testi add blog'))
+})
+
+test('a specific blog can be viewed', async () => {
+  const blogsAtStart = await testHelper.blogsInDb()
+  const blogToView = blogsAtStart[0]
+
+  const resultBlog = await api
+    .get(`/api/blogs/${blogToView.id}`)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  assert.deepStrictEqual(resultBlog.body.title, blogToView.title)
+  assert.deepStrictEqual(resultBlog.body.author, blogToView.author)
 })
 
 
