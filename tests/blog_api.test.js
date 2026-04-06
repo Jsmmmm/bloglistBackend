@@ -53,6 +53,15 @@ test('blog without title is not added', async () => {
     assert.strictEqual(blogsAtEnd.length, testHelper.initialBlogs.length)
 })
 
+test('blogs have id field instead of _id', async () => {
+  const response = await api.get('/api/blogs')
+  const blogs = response.body
+  blogs.forEach(blog => {
+    assert(blog.id !== undefined)
+    assert(blog._id === undefined)
+  })
+})
+
 test('add blog successfully', async () => {
     const testAdd = 
     {
@@ -99,6 +108,13 @@ test('delete blog by id', async () => {
 
   const titles = blogsAtEnd.map(b => b.title)
   assert(!titles.includes(blogToDelete.title))
+})
+
+test('if not given likes, default to 0', async () => {
+    const response = await api.post('/api/blogs').send(testHelper.blogWithLikesNotGiven).expect(201).expect('Content-type', /application\/json/)
+    const savedBlog = response.body
+    console.log('täsä liket: '+savedBlog.likes)
+    assert.strictEqual (savedBlog.likes, 0)
 })
 
 
