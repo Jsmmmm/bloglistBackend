@@ -5,5 +5,6 @@ Content-Type: application/json
   "title": "kokeilu title",
   "author": "kokeilu author",
   "url": "http://kokeilu.test",
-  "likes": "4"
+  "likes": "",
+  "userId": "69d50a96b425ecb954989770"
 }

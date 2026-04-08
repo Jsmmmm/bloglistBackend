@@ -5,6 +5,7 @@ const assert = require('node:assert')
 const app = require('../app')
 const Blog = require('../models/blog')
 const testHelper = require('./testHelper')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -16,6 +17,13 @@ beforeEach(async () => {
   await blogObject.save()
   blogObject = new Blog(testHelper.initialBlogs[1])
   await blogObject.save()
+
+  await User.deleteMany({})
+  let userObject = new User(testHelper.initialUsers[0])
+  await userObject.save()
+  userObject = new User(testHelper.initialUsers[1]) 
+  await userObject.save()
+  
 })
 
 
@@ -63,12 +71,16 @@ test('blogs have id field instead of _id', async () => {
 })
 
 test('add blog successfully', async () => {
+
+  const users = await testHelper.usersInDb()
+  const user = users[0]
     const testAdd = 
     {
         title: 'testi add blog',
         author: 'Testi Joonas',
         url: 'http://kokeilu.com',
-        likes: 10
+        likes: 10,
+        userId: user.id
     }
 
     await api.post('/api/blogs').send(testAdd).expect(201).expect('Content-type', /application\/json/)
@@ -111,12 +123,19 @@ test('delete blog by id', async () => {
 })
 
 test('if not given likes, default to 0', async () => {
-    const response = await api.post('/api/blogs').send(testHelper.blogWithLikesNotGiven).expect(201).expect('Content-type', /application\/json/)
+  const users = await testHelper.usersInDb()
+  const user = users[0]
+
+  const blog = {
+    ...testHelper.blogWithLikesNotGiven,
+    userId: user.id
+  }
+    const response = await api.post('/api/blogs').send(blog).expect(201).expect('Content-type', /application\/json/)
     const savedBlog = response.body
     console.log('täsä liket: '+savedBlog.likes)
     assert.strictEqual (savedBlog.likes, 0)
 })
-
+ 
 
 
 after(async () => {
