@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFzZGYiLCJpZCI6IjY5ZDdiOTNlYmQyNmJmMDRkNjIxZWU0YyIsImlhdCI6MTc3NTc0NjY5MX0.3L2OxR33sTatL1mlJkuueNp5dCCGKxrwVUdOejmwZyQ
 
 {
-  "title": "kokeilu title",
-  "author": "kokeilu author",
-  "url": "http://kokeilu.test",
-  "likes": "",
-  "userId": "69d50a96b425ecb954989770"
+  "title": "mmm title",
+  "author": "mmm author",
+  "url": "http://mmmmm.test",
+  "likes": ""
 }
